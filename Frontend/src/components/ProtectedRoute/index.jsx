@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import axios from "axios";
-import { API_BASE_URL } from "../../../services/api";
+import { API_BASE_URL } from "../../services/api";
 
 function ProtectedRoute() {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
