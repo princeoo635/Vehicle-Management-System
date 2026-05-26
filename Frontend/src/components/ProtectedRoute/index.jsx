@@ -9,16 +9,17 @@ function ProtectedRoute() {
   useEffect(() => {
     const verifyUser = async () => {
       try {
-        await axios.get(
-          `${API_BASE_URL}/users/current-user`,
-          {
-            withCredentials: true,
-          }
-        );
+        await axios.get(`${API_BASE_URL}/users/current-user`, {
+          withCredentials: true,
+        });
 
         setIsAuthenticated(true);
       } catch (error) {
-        console.log("Auth check failed:", error);
+        console.error("Auth check failed:");
+        console.error("Message:", error?.message);
+        console.error("Response:", error?.response?.data);
+        console.error("Status:", error?.response?.status);
+
         setIsAuthenticated(false);
       }
     };
