@@ -4,14 +4,15 @@ import { Link, useNavigate } from "react-router-dom";
 import { MdEmail } from "react-icons/md";
 import { FaLock } from "react-icons/fa6";
 import useAuth from "../../../hooks/useAuth";
-import cookies from "js-cookie";
 import { API_BASE_URL } from "../../../services/api";
 import "./index.css";
 
 function Login() {
   const navigate = useNavigate();
   const { recordTheUserData, user } = useAuth();
+
   const [loading, setLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -20,8 +21,8 @@ function Login() {
   const [error, setError] = useState("");
 
   const handleChange = (e) => {
-    console.log(e.target);
     const { name, value } = e.target;
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
@@ -30,38 +31,45 @@ function Login() {
 
   async function handleSubmit(e) {
     e.preventDefault();
+
     setError("");
     setLoading(true);
 
     try {
-      const response = await axios.post(`${API_BASE_URL}/users/login`, {
-        email: formData.email,
-        password: formData.password,
-      });
+      const response = await axios.post(
+        `${API_BASE_URL}/users/login`,
+        {
+          email: formData.email,
+          password: formData.password,
+        },
+        {
+          withCredentials: true,
+        }
+      );
 
-      if (response.data?.matched === true || response.data?.success === true) {
-        console.log(response.data, "login response");
+      console.log(response.data, "login response");
+
+      if (
+        response.data?.matched === true ||
+        response.data?.success === true
+      ) {
         recordTheUserData(response.data.data);
-        // Store the access token in cookies with a 7-day expiration
-await axios.post(
-  "https://auto-care-service.onrender.com/api/v1/users/login",
-  data,
-  {
-    withCredentials: true,
-  }
-);
-        const path = user?.whoEntered;
-        navigate(`/${path}`); // Navigate to the path based on who entered
+
+        const path =
+          response.data.data?.whoEntered || user?.whoEntered;
+
+        navigate(`/${path}`);
       }
-      setLoading(false);
     } catch (err) {
+      console.log("Login error:", err);
+
       const message =
         err.response?.data?.message ||
         "Login failed. Please check your credentials and try again.";
+
       setError(message);
-      console.log("Login error:", err.response);
+    } finally {
       setLoading(false);
-      return;
     }
   }
 
@@ -70,15 +78,20 @@ await axios.post(
       <Link to="/" className="back-home-link">
         ← Back to Home
       </Link>
+
       <form className="Form-container" onSubmit={handleSubmit}>
-        <h2>Login {user?.whoEntered ? `as ${user.whoEntered}` : ""}</h2>
+        <h2>
+          Login {user?.whoEntered ? `as ${user.whoEntered}` : ""}
+        </h2>
 
         <div className="form-group">
           <label htmlFor="email" className="label">
             Email:
           </label>
+
           <div className="input-wrapper">
             <MdEmail className="input-icon" aria-hidden="true" />
+
             <input
               className="input"
               type="email"
@@ -96,8 +109,10 @@ await axios.post(
           <label htmlFor="password" className="label">
             Password:
           </label>
+
           <div className="input-wrapper">
             <FaLock className="input-icon" aria-hidden="true" />
+
             <input
               className="input"
               type="password"
@@ -112,6 +127,7 @@ await axios.post(
         </div>
 
         {error ? <p className="error-text">{error}</p> : null}
+
         <button
           className="button login-button"
           type="submit"
