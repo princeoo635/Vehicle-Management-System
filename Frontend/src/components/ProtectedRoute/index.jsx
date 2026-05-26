@@ -7,7 +7,7 @@ function ProtectedRoute() {
 
   useEffect(() => {
     axios
-      .get("https://your-backend.onrender.com/api/v1/users/current-user", {
+      .get("https://auto-care-service.onrender.com/api/v1/users/current-user", {
         withCredentials: true,
       })
       .then(() => {
