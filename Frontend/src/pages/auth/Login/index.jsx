@@ -43,7 +43,7 @@ function Login() {
         console.log(response.data, "login response");
         recordTheUserData(response.data.data);
         // Store the access token in cookies with a 7-day expiration
-        cookies.set("vehicleServiceToken", response.data.accessToken, {
+        cookies.set("accesstoken", response.data.accessToken, {
           expires: 7,
           path: "/",
         });
