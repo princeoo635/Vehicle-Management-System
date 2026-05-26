@@ -18,7 +18,7 @@ function ProtectedRoute() {
 
         setIsAuthenticated(true);
       } catch (error) {
-        console.log(error);
+        console.log("Auth check failed:", error);
         setIsAuthenticated(false);
       }
     };
@@ -30,11 +30,7 @@ function ProtectedRoute() {
     return <div>Loading...</div>;
   }
 
-  return isAuthenticated ? (
-    <Outlet />
-  ) : (
-    <Navigate to="/login" replace />
-  );
+  return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
 }
 
 export default ProtectedRoute;
