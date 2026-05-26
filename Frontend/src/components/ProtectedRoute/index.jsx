@@ -1,21 +1,29 @@
 import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
 import axios from "axios";
+import { API_BASE_URL } from "../../../services/api";
 
 function ProtectedRoute() {
   const [isAuthenticated, setIsAuthenticated] = useState(null);
 
   useEffect(() => {
-    axios
-      .get("https://auto-care-service.onrender.com/api/v1/users/current-user", {
-        withCredentials: true,
-      })
-      .then(() => {
+    const verifyUser = async () => {
+      try {
+        await axios.get(
+          `${API_BASE_URL}/users/current-user`,
+          {
+            withCredentials: true,
+          }
+        );
+
         setIsAuthenticated(true);
-      })
-      .catch(() => {
+      } catch (error) {
+        console.log(error);
         setIsAuthenticated(false);
-      });
+      }
+    };
+
+    verifyUser();
   }, []);
 
   if (isAuthenticated === null) {
