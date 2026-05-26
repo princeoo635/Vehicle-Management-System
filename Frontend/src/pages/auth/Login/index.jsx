@@ -43,10 +43,13 @@ function Login() {
         console.log(response.data, "login response");
         recordTheUserData(response.data.data);
         // Store the access token in cookies with a 7-day expiration
-        cookies.set("accesstoken", response.data.accessToken, {
-          expires: 7,
-          path: "/",
-        });
+await axios.post(
+  "https://your-backend.onrender.com/api/v1/users/login",
+  data,
+  {
+    withCredentials: true,
+  }
+);
         const path = user?.whoEntered;
         navigate(`/${path}`); // Navigate to the path based on who entered
       }
