@@ -1,10 +1,32 @@
-import cookies from "js-cookie";
+import { useEffect, useState } from "react";
 import { Navigate, Outlet } from "react-router-dom";
+import axios from "axios";
 
 function ProtectedRoute() {
-  const token = cookies.get("accesstoken");
+  const [isAuthenticated, setIsAuthenticated] = useState(null);
 
-  return token ? <Outlet /> : <Navigate to="/login" replace />;
+  useEffect(() => {
+    axios
+      .get("https://your-backend.onrender.com/api/v1/users/current-user", {
+        withCredentials: true,
+      })
+      .then(() => {
+        setIsAuthenticated(true);
+      })
+      .catch(() => {
+        setIsAuthenticated(false);
+      });
+  }, []);
+
+  if (isAuthenticated === null) {
+    return <div>Loading...</div>;
+  }
+
+  return isAuthenticated ? (
+    <Outlet />
+  ) : (
+    <Navigate to="/login" replace />
+  );
 }
 
 export default ProtectedRoute;
