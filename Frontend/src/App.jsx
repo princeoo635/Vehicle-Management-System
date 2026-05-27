@@ -27,10 +27,20 @@ function App() {
     }
   }, []);
 
-  const recordTheUserData = (data) => {
-    console.log(user);
-    setUserData((prev) => [...prev, data]);
+const recordTheUserData = (data) => {
+  const updatedUser = {
+    ...user,
+    currentUser: data,
+    whoEntered: data?.whoEntered,
   };
+
+  setUser(updatedUser);
+
+  localStorage.setItem(
+    "user",
+    JSON.stringify(updatedUser)
+  );
+};
 
   const whoenteredtopage = (person) => {
     const existingUsersData = localStorage.getItem("user");
