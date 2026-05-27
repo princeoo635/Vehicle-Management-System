@@ -42,6 +42,7 @@ export default function ProfileCard({
     setActionError("");
   };
 
+  // UPDATE PROFILE
   const onUpdateProfile = async (e) => {
     e.preventDefault();
 
@@ -60,7 +61,10 @@ export default function ProfileCard({
         }
       );
 
-      setCustomerData(res.data.data);
+      setCustomerData((prev) => ({
+        ...prev,
+        ...res.data.data,
+      }));
 
       setActionMessage(
         "Profile updated successfully."
@@ -75,6 +79,7 @@ export default function ProfileCard({
     }
   };
 
+  // CHANGE PASSWORD
   const onChangePassword = async (e) => {
     e.preventDefault();
 
@@ -110,6 +115,7 @@ export default function ProfileCard({
     }
   };
 
+  // UPDATE PROFILE IMAGE
   const onUpdateProfileImage = async (e) => {
     e.preventDefault();
 
@@ -140,7 +146,10 @@ export default function ProfileCard({
         }
       );
 
-      setCustomerData(res.data.data);
+      setCustomerData((prev) => ({
+        ...prev,
+        ...res.data.data,
+      }));
 
       setActionMessage(
         "Profile image updated successfully."
@@ -232,6 +241,7 @@ export default function ProfileCard({
       </div>
 
       <div className="cust-panel-grid">
+        {/* UPDATE ACCOUNT */}
         <form
           className="cust-card"
           onSubmit={onUpdateProfile}
@@ -295,6 +305,7 @@ export default function ProfileCard({
           </button>
         </form>
 
+        {/* CHANGE PASSWORD */}
         <form
           className="cust-card"
           onSubmit={onChangePassword}
@@ -347,6 +358,7 @@ export default function ProfileCard({
           </button>
         </form>
 
+        {/* UPDATE PROFILE IMAGE */}
         <form
           className="cust-card"
           onSubmit={onUpdateProfileImage}
