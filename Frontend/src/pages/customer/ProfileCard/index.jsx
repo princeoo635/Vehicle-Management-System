@@ -1,24 +1,32 @@
 import { useState, useEffect } from "react";
 import axios from "axios";
-import cookies from "js-cookie";
 import { API_BASE_URL } from "../../../services/api";
 import "./index.css";
 
-export default function ProfileCard({ customerData, setCustomerData }) {
+export default function ProfileCard({
+  customerData,
+  setCustomerData,
+}) {
   const [profileForm, setProfileForm] = useState({
     name: customerData?.name || "",
     email: customerData?.email || "",
     phone: customerData?.phone || "",
   });
+
   const [passwordForm, setPasswordForm] = useState({
     oldPassword: "",
     newPassword: "",
   });
-  const [profileImageFile, setProfileImageFile] = useState(null);
-  const [actionMessage, setActionMessage] = useState("");
-  const [actionError, setActionError] = useState("");
 
-  // Sync form when customerData loads
+  const [profileImageFile, setProfileImageFile] =
+    useState(null);
+
+  const [actionMessage, setActionMessage] =
+    useState("");
+
+  const [actionError, setActionError] =
+    useState("");
+
   useEffect(() => {
     if (customerData) {
       setProfileForm({
@@ -29,12 +37,6 @@ export default function ProfileCard({ customerData, setCustomerData }) {
     }
   }, [customerData]);
 
-  const getAuthConfig = () => {
-    const jwtToken = cookies.get("vehicleServiceToken");
-    if (!jwtToken) return null;
-    return { headers: { Authorization: `Bearer ${jwtToken}` } };
-  };
-
   const resetMessages = () => {
     setActionMessage("");
     setActionError("");
@@ -42,9 +44,10 @@ export default function ProfileCard({ customerData, setCustomerData }) {
 
   const onUpdateProfile = async (e) => {
     e.preventDefault();
+
     resetMessages();
+
     try {
-      const config = getAuthConfig();
       const res = await axios.patch(
         `${API_BASE_URL}/users/updateAccount`,
         {
@@ -52,63 +55,104 @@ export default function ProfileCard({ customerData, setCustomerData }) {
           email: profileForm.email,
           phone: profileForm.phone,
         },
-        config,
+        {
+          withCredentials: true,
+        }
       );
+
       setCustomerData(res.data.data);
-      setActionMessage("Profile updated successfully.");
+
+      setActionMessage(
+        "Profile updated successfully."
+      );
     } catch (err) {
+      console.log(err);
+
       setActionError(
-        err?.response?.data?.message || "Failed to update profile.",
+        err?.response?.data?.message ||
+          "Failed to update profile."
       );
     }
   };
 
   const onChangePassword = async (e) => {
     e.preventDefault();
+
     resetMessages();
+
     try {
-      const config = getAuthConfig();
       await axios.patch(
         `${API_BASE_URL}/users/updatePassword`,
         {
           oldPassword: passwordForm.oldPassword,
           newPassword: passwordForm.newPassword,
         },
-        config,
+        {
+          withCredentials: true,
+        }
       );
-      setActionMessage("Password changed successfully.");
-      setPasswordForm({ oldPassword: "", newPassword: "" });
+
+      setActionMessage(
+        "Password changed successfully."
+      );
+
+      setPasswordForm({
+        oldPassword: "",
+        newPassword: "",
+      });
     } catch (err) {
+      console.log(err);
+
       setActionError(
-        err?.response?.data?.message || "Failed to change password.",
+        err?.response?.data?.message ||
+          "Failed to change password."
       );
     }
   };
 
   const onUpdateProfileImage = async (e) => {
     e.preventDefault();
+
     resetMessages();
+
     if (!profileImageFile) {
-      setActionError("Please select an image.");
+      setActionError("Please select an image");
       return;
     }
+
     try {
-      const config = getAuthConfig();
-      const form = new FormData();
-      form.append("profileImage", profileImageFile);
+      const formData = new FormData();
+
+      formData.append(
+        "profileImage",
+        profileImageFile
+      );
+
       const res = await axios.patch(
         `${API_BASE_URL}/users/profileImage`,
-        form,
+        formData,
         {
-          headers: { ...config.headers, "Content-Type": "multipart/form-data" },
-        },
+          withCredentials: true,
+          headers: {
+            "Content-Type":
+              "multipart/form-data",
+          },
+        }
       );
+
       setCustomerData(res.data.data);
-      setActionMessage("Profile image updated.");
+
+      setActionMessage(
+        "Profile image updated successfully."
+      );
+
       setProfileImageFile(null);
     } catch (err) {
+      console.log(err);
+
       setActionError(
-        err?.response?.data?.message || "Failed to update profile image.",
+        err?.response?.data?.message ||
+          "Failed to update profile image."
       );
     }
   };
@@ -118,14 +162,22 @@ export default function ProfileCard({ customerData, setCustomerData }) {
       {(actionMessage || actionError) && (
         <div className="cust-action-banner">
           {actionMessage && (
-            <p className="cust-action-success">{actionMessage}</p>
+            <p className="cust-action-success">
+              {actionMessage}
+            </p>
           )}
-          {actionError && <p className="cust-action-error">{actionError}</p>}
+
+          {actionError && (
+            <p className="cust-action-error">
+              {actionError}
+            </p>
+          )}
         </div>
       )}
 
       <div className="cust-card cust-profile-info">
         <h3>My Profile</h3>
+
         {customerData?.profileImage && (
           <img
             className="cust-avatar"
@@ -133,114 +185,194 @@ export default function ProfileCard({ customerData, setCustomerData }) {
             alt="avatar"
           />
         )}
+
         <div className="cust-info-row">
-          <span className="cust-label">Name</span>
+          <span className="cust-label">
+            Name
+          </span>
+
           <span>{customerData?.name}</span>
         </div>
+
         <div className="cust-info-row">
-          <span className="cust-label">Username</span>
-          <span>@{customerData?.userName}</span>
+          <span className="cust-label">
+            Username
+          </span>
+
+          <span>
+            @{customerData?.userName}
+          </span>
         </div>
+
         <div className="cust-info-row">
-          <span className="cust-label">Email</span>
+          <span className="cust-label">
+            Email
+          </span>
+
           <span>{customerData?.email}</span>
         </div>
+
         <div className="cust-info-row">
-          <span className="cust-label">Phone</span>
+          <span className="cust-label">
+            Phone
+          </span>
+
           <span>{customerData?.phone}</span>
         </div>
+
         <div className="cust-info-row">
-          <span className="cust-label">Address</span>
-          <span>{customerData?.address || "—"}</span>
+          <span className="cust-label">
+            Address
+          </span>
+
+          <span>
+            {customerData?.address || "—"}
+          </span>
         </div>
       </div>
 
       <div className="cust-panel-grid">
-        <form className="cust-card" onSubmit={onUpdateProfile}>
+        <form
+          className="cust-card"
+          onSubmit={onUpdateProfile}
+        >
           <h3>Update Account</h3>
+
           <div className="cust-form-row">
             <label>Name</label>
+
             <input
               className="cust-text-input"
               value={profileForm.name}
               onChange={(e) =>
-                setProfileForm((p) => ({ ...p, name: e.target.value }))
+                setProfileForm((prev) => ({
+                  ...prev,
+                  name: e.target.value,
+                }))
               }
               required
             />
           </div>
+
           <div className="cust-form-row">
             <label>Email</label>
+
             <input
               className="cust-text-input"
               type="email"
               value={profileForm.email}
               onChange={(e) =>
-                setProfileForm((p) => ({ ...p, email: e.target.value }))
+                setProfileForm((prev) => ({
+                  ...prev,
+                  email: e.target.value,
+                }))
               }
               required
             />
           </div>
+
           <div className="cust-form-row">
             <label>Phone</label>
+
             <input
               className="cust-text-input"
               value={profileForm.phone}
               onChange={(e) =>
-                setProfileForm((p) => ({ ...p, phone: e.target.value }))
+                setProfileForm((prev) => ({
+                  ...prev,
+                  phone: e.target.value,
+                }))
               }
               required
             />
           </div>
-          <button className="button" type="submit">
+
+          <button
+            className="button"
+            type="submit"
+          >
             Save Changes
           </button>
         </form>
 
-        <form className="cust-card" onSubmit={onChangePassword}>
+        <form
+          className="cust-card"
+          onSubmit={onChangePassword}
+        >
           <h3>Change Password</h3>
+
           <div className="cust-form-row">
-            <label>Current Password</label>
+            <label>
+              Current Password
+            </label>
+
             <input
               className="cust-text-input"
               type="password"
               value={passwordForm.oldPassword}
               onChange={(e) =>
-                setPasswordForm((p) => ({ ...p, oldPassword: e.target.value }))
+                setPasswordForm((prev) => ({
+                  ...prev,
+                  oldPassword:
+                    e.target.value,
+                }))
               }
               required
             />
           </div>
+
           <div className="cust-form-row">
             <label>New Password</label>
+
             <input
               className="cust-text-input"
               type="password"
               value={passwordForm.newPassword}
               onChange={(e) =>
-                setPasswordForm((p) => ({ ...p, newPassword: e.target.value }))
+                setPasswordForm((prev) => ({
+                  ...prev,
+                  newPassword:
+                    e.target.value,
+                }))
               }
               required
             />
           </div>
-          <button className="button" type="submit">
+
+          <button
+            className="button"
+            type="submit"
+          >
             Change Password
           </button>
         </form>
 
-        <form className="cust-card" onSubmit={onUpdateProfileImage}>
+        <form
+          className="cust-card"
+          onSubmit={onUpdateProfileImage}
+        >
           <h3>Update Profile Image</h3>
+
           <div className="cust-form-row">
             <label>New Image</label>
+
             <input
               className="cust-text-input"
               type="file"
               accept="image/*"
-              onChange={(e) => setProfileImageFile(e.target.files?.[0] || null)}
+              onChange={(e) =>
+                setProfileImageFile(
+                  e.target.files?.[0] || null
+                )
+              }
               required
             />
           </div>
-          <button className="button" type="submit">
+
+          <button
+            className="button"
+            type="submit"
+          >
             Upload
           </button>
         </form>
